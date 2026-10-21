@@ -6,17 +6,17 @@ import { createClient } from "@supabase/supabase-js";
 import type { Database } from "./types";
 
 function createSupabaseAdminClient() {
-  const SUPABASE_URL = process.env.SUPABASE_URL;
-  const SUPABASE_SERVICE_ROLE_KEY =
-    eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9
-      .eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Inpld2N2b2V4andhY3R4dm54emp1Iiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc4MDM1Mjc4MiwiZXhwIjoyMDk1OTI4NzgyfQ
-      .YB2QIPDhasN5Lv -
-    o0dT8e4VS -
-    hNZ6T0JGvhWRUMv1kU
-      .eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Inpld2N2b2V4andhY3R4dm54emp1Iiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc4MDM1Mjc4MiwiZXhwIjoyMDk1OTI4NzgyfQ
-      .YB2QIPDhasN5Lv -
-    o0dT8e4VS -
-    hNZ6T0JGvhWRUMv1kU;
+  const SUPABASE_URL = "https://zewcvoexjwactxvnxzju.supabase.co";
+  const SUPABASE_SERVICE_ROLE_KEY = 
+    "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9" +
+    ".eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Inpld2N2b2V4andhY3R4dm54emp1Iiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc4MDM1Mjc4MiwiZXhwIjoyMDk1OTI4NzgyfQ" +
+    ".YB2QIPDhasN5Lv-" +
+    "o0dT8e4VS-" +
+    "hNZ6T0JGvhWRUMv1kU" +
+    ".eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Inpld2N2b2V4andhY3R4dm54emp1Iiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc4MDM1Mjc4MiwiZXhwIjoyMDk1OTI4NzgyfQ" +
+    ".YB2QIPDhasN5Lv-" +
+    "o0dT8e4VS-" +
+    "hNZ6T0JGvhWRUMv1kU";
 
   if (!SUPABASE_URL || !SUPABASE_SERVICE_ROLE_KEY) {
     const missing = [
