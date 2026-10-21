@@ -1,0 +1,74 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    function own(uid) { return request.auth != null && request.auth.uid == uid; }
+    function price(name) {
+      return {'Starter':20, 'Bronze':60, 'Silver':120, 'Gold':240, 'Platinum':360, 'Diamond':500}[name];
+    }
+    match /users/{uid} {
+      allow read: if own(uid);
+      allow create: if own(uid)
+        && request.resource.data.keys().hasOnly(['uid','email','availableBalance','lockedBalance','createdAt'])
+        && request.resource.data.uid == uid
+        && request.resource.data.email == request.auth.token.email
+        && request.resource.data.availableBalance == 0
+        && request.resource.data.lockedBalance == 0
+        && request.resource.data.createdAt is string;
+      allow update: if own(uid)
+        && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['availableBalance','lockedBalance','lastSubscriptionId'])
+        && request.resource.data.availableBalance >= 0
+        && request.resource.data.lockedBalance >= 0
+        && (
+          // Package purchase: balances shift by exactly the new subscription amount.
+          (request.resource.data.lastSubscriptionId is string
+            && !exists(/databases/$(database)/documents/subscriptions/$(request.resource.data.lastSubscriptionId))
+            && getAfter(/databases/$(database)/documents/subscriptions/$(request.resource.data.lastSubscriptionId)).data.userId == uid
+            && request.resource.data.availableBalance == resource.data.availableBalance - getAfter(/databases/$(database)/documents/subscriptions/$(request.resource.data.lastSubscriptionId)).data.amountInvested
+            && request.resource.data.lockedBalance == resource.data.lockedBalance + getAfter(/databases/$(database)/documents/subscriptions/$(request.resource.data.lastSubscriptionId)).data.amountInvested)
+          ||
+          // Daily 8:00 PM VET payout: an equal amount moves from locked to available.
+          (request.resource.data.lastSubscriptionId == resource.data.lastSubscriptionId
+            && request.resource.data.availableBalance > resource.data.availableBalance
+            && request.resource.data.lockedBalance < resource.data.lockedBalance
+            && request.resource.data.availableBalance - resource.data.availableBalance == resource.data.lockedBalance - request.resource.data.lockedBalance)
+        );
+      allow delete: if false;
+    }
+    match /subscriptions/{id} {
+      allow get: if request.auth != null && id.matches(request.auth.uid + '_.*');
+      allow list: if own(resource.data.userId);
+      allow create: if own(request.resource.data.userId)
+        && request.resource.data.keys().hasOnly(['userId','packageName','amountInvested','dailyReturn','status','createdAt','lastProfitUpdate','daysPaid'])
+        && request.resource.data.amountInvested == price(request.resource.data.packageName)
+        && request.resource.data.dailyReturn == request.resource.data.amountInvested * 0.05
+        && request.resource.data.status == 'active'
+        && request.resource.data.createdAt is string
+        && request.resource.data.lastProfitUpdate == ''
+        && request.resource.data.daysPaid == 0
+        && getAfter(/databases/$(database)/documents/users/$(request.auth.uid)).data.lastSubscriptionId == id
+        && getAfter(/databases/$(database)/documents/users/$(request.auth.uid)).data.availableBalance == get(/databases/$(database)/documents/users/$(request.auth.uid)).data.availableBalance - request.resource.data.amountInvested
+        && getAfter(/databases/$(database)/documents/users/$(request.auth.uid)).data.lockedBalance == get(/databases/$(database)/documents/users/$(request.auth.uid)).data.lockedBalance + request.resource.data.amountInvested;
+      // Payout bookkeeping only: profit timestamp, paid-day counter and completion status.
+      allow update: if own(resource.data.userId)
+        && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['lastProfitUpdate','daysPaid','status'])
+        && request.resource.data.lastProfitUpdate is string
+        && request.resource.data.daysPaid is number
+        && request.resource.data.daysPaid >= resource.data.daysPaid
+        && request.resource.data.daysPaid <= 42
+        && request.resource.data.status in ['active','completed'];
+      allow delete: if false;
+    }
+    match /deposits/{id} {
+      allow read: if own(resource.data.userId);
+      allow create: if own(request.resource.data.userId)
+        && request.resource.data.keys().hasOnly(['userId','userEmail','amount','reference','status','createdAt'])
+        && request.resource.data.userEmail == request.auth.token.email
+        && request.resource.data.amount is number && request.resource.data.amount > 0
+        && request.resource.data.status == 'pending'
+        && request.resource.data.reference is string && request.resource.data.reference.size() >= 6
+        && request.resource.data.createdAt is string;
+      allow update, delete: if false;
+    }
+    match /{document=**} { allow read, write: if false; }
+  }
+}
