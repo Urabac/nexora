@@ -1,0 +1,102 @@
+@import "tailwindcss" source(none);
+@source "../src";
+@import "tw-animate-css";
+
+@custom-variant dark (&:is(.dark *));
+
+@theme inline {
+  --radius-sm: calc(var(--radius) - 4px);
+  --radius-md: calc(var(--radius) - 2px);
+  --radius-lg: var(--radius);
+  --radius-xl: calc(var(--radius) + 4px);
+  --radius-2xl: calc(var(--radius) + 8px);
+  --radius-3xl: calc(var(--radius) + 12px);
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+  --color-popover: var(--popover);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-destructive: var(--destructive);
+  --color-destructive-foreground: var(--destructive-foreground);
+  --color-border: var(--border);
+  --color-input: var(--input);
+  --color-ring: var(--ring);
+  --color-success: var(--success);
+  --color-success-foreground: var(--success-foreground);
+  --color-gold: var(--gold);
+  --font-display: var(--font-display);
+}
+
+:root {
+  --radius: 1rem;
+  --font-display: "Space Grotesk", system-ui, sans-serif;
+
+  --background: oklch(0.18 0.06 260);
+  --foreground: oklch(0.98 0.005 240);
+
+  --card: oklch(0.23 0.07 260);
+  --card-foreground: oklch(0.98 0.005 240);
+
+  --popover: oklch(0.23 0.07 260);
+  --popover-foreground: oklch(0.98 0.005 240);
+
+  --primary: oklch(0.65 0.18 255);
+  --primary-foreground: oklch(0.12 0.05 260);
+
+  --secondary: oklch(0.28 0.07 260);
+  --secondary-foreground: oklch(0.98 0.005 240);
+
+  --muted: oklch(0.28 0.05 260);
+  --muted-foreground: oklch(0.72 0.03 250);
+
+  --accent: oklch(0.55 0.2 260);
+  --accent-foreground: oklch(0.98 0.005 240);
+
+  --destructive: oklch(0.62 0.22 25);
+  --destructive-foreground: oklch(0.98 0.005 240);
+
+  --success: oklch(0.72 0.17 155);
+  --success-foreground: oklch(0.12 0.05 260);
+
+  --gold: oklch(0.82 0.14 85);
+
+  --border: oklch(0.32 0.06 260);
+  --input: oklch(0.28 0.06 260);
+  --ring: oklch(0.65 0.18 255);
+
+  --gradient-primary: linear-gradient(135deg, oklch(0.45 0.18 260), oklch(0.65 0.2 250));
+  --gradient-card: linear-gradient(160deg, oklch(0.26 0.08 260), oklch(0.21 0.06 265));
+  --gradient-hero: radial-gradient(ellipse at top, oklch(0.35 0.15 260) 0%, oklch(0.15 0.05 260) 70%);
+  --shadow-glow: 0 10px 40px -10px oklch(0.55 0.2 260 / 0.5);
+  --shadow-card: 0 8px 30px -10px oklch(0.1 0.05 260 / 0.6);
+}
+
+@layer base {
+  * {
+    border-color: var(--color-border);
+  }
+
+  html, body {
+    background: var(--background);
+    color: var(--color-foreground);
+    font-family: var(--font-display);
+    -webkit-font-smoothing: antialiased;
+  }
+}
+
+@layer utilities {
+  .bg-gradient-primary { background: var(--gradient-primary); }
+  .bg-gradient-card { background: var(--gradient-card); }
+  .bg-gradient-hero { background: var(--gradient-hero); }
+  .shadow-glow { box-shadow: var(--shadow-glow); }
+  .shadow-card { box-shadow: var(--shadow-card); }
+}
